@@ -1,6 +1,6 @@
 {
   "name": "@kedoska/resty",
-  "version": "1.0.29",
+  "version": "0.0.0",
   "description": "An API interface to build games (and other stuff).",
   "main": "index.js",
   "types": "index.d.ts",
