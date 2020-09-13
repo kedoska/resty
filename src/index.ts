@@ -1,5 +1,5 @@
-import {normalize} from 'path'
-import { Router, Request, Response, NextFunction } from 'express'
+import { normalize } from 'path'
+import { Router, Request, Response, NextFunction, json, urlencoded } from 'express'
 
 export interface Pagination {
   limit: number
@@ -48,7 +48,7 @@ export interface Query {
   conditions?: Condition[]
 }
 
-export type DataExtractor = <T>(payload: any) => T
+export type DataExtractor = (payload: any) => any
 
 export type QueryExtractor = (payload: any) => Query
 
@@ -107,6 +107,8 @@ export interface RestOptions {
 
 export default (options: RestOptions): Router => {
   const router = Router()
+  router.use(json())
+  router.use(urlencoded({ extended: false }))
 
   const parent = !options.parent ? '/' : options.parent
   const path = normalize(`${parent}/${options.version}/${options.resourceName}`)
@@ -126,7 +128,7 @@ export default (options: RestOptions): Router => {
         req.dbQuery = options.query.extractor(req[queryExtractorSource])
       }
 
-      if (options.parser) {
+      if (req.method === 'POST' && options.parser) {
         req.parsedResource = options.parser.extractor(req[options.parser.source])
       }
 
@@ -175,15 +177,16 @@ export default (options: RestOptions): Router => {
     }
   })
 
-  router.post(`${path}/:id`, async (req, res, next) => {
+  router.post(`${path}`, async (req, res, next) => {
     if (!options.dataAdapter.createOne) {
       next(new Error(`createOne not yet implemented`))
       return
     }
+
     try {
-      res.send(await options.dataAdapter.createOne(options.resourceName, req.parsedResource))
+      res.send(await options.dataAdapter.createOne(options.resourceName, req.parsedResource || req.body))
     } catch ({ message }) {
-      next(new Error(`could not create the resource "${req.dbResourceId}", ${message}`))
+      next(new Error(`could not create the new resource, ${message}`))
     }
   })
 
@@ -205,7 +208,9 @@ export default (options: RestOptions): Router => {
       return
     }
     try {
-      res.send(await options.dataAdapter.updateOne(options.resourceName, req.dbResourceId, req.parsedResource))
+      res.send(
+        await options.dataAdapter.updateOne(options.resourceName, req.dbResourceId, req.parsedResource || req.body),
+      )
     } catch ({ message }) {
       next(new Error(`could not update the resource "${req.dbResourceId}", ${message}`))
     }
