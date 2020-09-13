@@ -1,6 +1,6 @@
 {
   "name": "@kedoska/resty",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "An API interface to build games (and other stuff).",
   "main": "index.js",
   "types": "index.d.ts",
@@ -8,10 +8,7 @@
     "test": "jest --config jestconfig.json",
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\"",
-    "lint": "tslint -p tsconfig.json",
-    "preversion": "./before-publish.sh",
-    "version": "git add .",
-    "postversion": "git push && git push --tags && rm -rf lib"
+    "lint": "tslint -p tsconfig.json"
   },
   "repository": {
     "type": "git",
