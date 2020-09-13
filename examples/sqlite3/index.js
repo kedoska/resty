@@ -1,5 +1,5 @@
 const app = require("express")();
-const resty = require("@kedoska/resty");
+const resty = require("../../lib");
 const db = require("./database.js")("./db/main.sqlite");
 
 app.use(
