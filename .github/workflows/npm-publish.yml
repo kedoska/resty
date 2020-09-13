@@ -1,0 +1,29 @@
+name: Publish
+on:
+  push:
+    tags:
+      - v*.*.*
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 13
+          registry-url: https://registry.npmjs.org/
+      - name: Build
+        run: |
+            npm ci
+            npm install
+            npm run test
+            npm run build
+      - name: Publish
+        run: |
+            cp ./README.md ./lib
+            cd ./lib
+            npm publish --access public
+        shell: bash
+        env:
+          CI: true
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

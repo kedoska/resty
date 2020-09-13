@@ -1,0 +1,45 @@
+{
+  "name": "@kedoska/resty",
+  "version": "1.0.29",
+  "description": "An API interface to build games (and other stuff).",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "test": "jest --config jestconfig.json",
+    "build": "tsc",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "lint": "tslint -p tsconfig.json",
+    "preversion": "./before-publish.sh",
+    "version": "git add .",
+    "postversion": "git push && git push --tags && rm -rf lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kedoska/resty.git"
+  },
+  "author": "Marco Casula<marco.casula@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kedoska/resty/issues"
+  },
+  "homepage": "https://www.npmjs.com/package/@kedoska/resty",
+  "devDependencies": {
+    "@types/express": "^4.17.6",
+    "@types/jest": "^25.2.2",
+    "@types/supertest": "^2.0.10",
+    "codecov": "^3.6.5",
+    "express": "^4.17.1",
+    "jest": "^26.0.1",
+    "jest-fetch-mock": "^3.0.3",
+    "prettier": "^2.0.5",
+    "supertest": "^4.0.2",
+    "ts-jest": "^26.0.0",
+    "tslint": "^6.1.2",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^3.9.2",
+    "whatwg-fetch": "^3.0.0"
+  },
+  "peerDependencies": {
+    "express": "^4.17.1"
+  }
+}

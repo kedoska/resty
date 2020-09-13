@@ -1,0 +1,24 @@
+name: Test
+on: [pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 13
+          registry-url: https://registry.npmjs.org/
+      - run: |
+            npm ci
+            npm install
+            npm run test
+            npm run format
+            npm run lint
+            npm run build
+      - uses: actions/upload-artifact@v1
+        with:
+          name: temp-package
+          path: lib
+        env:
+          CI: true

@@ -1,0 +1,13 @@
+{
+  "transform": {
+    "^.+\\.(t|j)sx?$": "ts-jest"
+  },
+  "setupFiles": ["./jest.setup.js"],
+  "testRegex": "(/tests/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+  "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"],
+  "coverageDirectory": "./coverage/",
+  "collectCoverage": true,
+  "modulePathIgnorePatterns": [
+    "<rootDir>/lib/"
+  ]
+}
