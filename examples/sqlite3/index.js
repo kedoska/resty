@@ -4,7 +4,7 @@ const db = require("./database.js")("./db/main.sqlite");
 app.use(
   resty.default({
     version: "v1",
-    resourceName: "users",
+    resource: "users",
     dataAdapter: {
       /**
        * selectMany creates the GET /v1/users route.

@@ -12,7 +12,7 @@ beforeAll(() => {
 })
 
 const dataAdapter: DataAdapter = {
-  createOne: (resourceName: string, resource: User): Promise<User> =>
+  createOne: (resource: User): Promise<User> =>
     new Promise((resolve) => {
       database.push(resource)
       resolve(resource)
@@ -21,7 +21,7 @@ const dataAdapter: DataAdapter = {
 
 const users = resty({
   version: 'v1',
-  resourceName: 'users',
+  resource: 'users',
   dataAdapter,
 })
 

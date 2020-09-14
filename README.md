@@ -5,6 +5,10 @@ An NPM package for providing quick and dirty JSON CRUD REST API into your existi
 
 ### Key concept
 
+#### Specify Version and Resource
+The first operation is to define the REST resource, passing the **version** and the **resource name**.<br/>
+Both values are used to create the API endpoint, having the version as the root and the resource name as the second path.
+
 #### The Data Adapter
 Defines the data functions to mount the endpoints.<br/>
 The following functions can be defined into the data-adapter and passed as argument.
@@ -18,4 +22,4 @@ The following functions can be defined into the data-adapter and passed as argum
 
 ### Examples
 
- - How to build a CRUD REST API using Express, resty and Sqlite3 [exmaples/sqllite3](https://)?
+ - How to build a CRUD REST API using Express, resty and Sqlite3 [exmaples/sqllite3](https://github.com/kedoska/resty/tree/master/examples/sqlite3)?
