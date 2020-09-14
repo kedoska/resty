@@ -3,16 +3,14 @@ import { Router, Request, Response, NextFunction, json, urlencoded } from 'expre
 
 export interface Pagination {
   limit: number
-  itemPerPage: number
   page: number
 }
 
 export const pagination = (payload: any = { pagination: {} }): Pagination => {
-  const { limit = 1, itemPerPage = 10, page = 0 } = payload || {}
+  const { limit = '0', page = '0' } = payload || {}
   return {
-    limit,
-    itemPerPage,
-    page,
+    limit: Number.parseInt(limit, 0),
+    page: Number.parseInt(page, 0),
   }
 }
 
@@ -62,11 +60,7 @@ export type deleteAllFn = () => Promise<any[]>
 
 export type selectAll = () => Promise<any[]>
 export type selectWithQuery = (query?: Query) => Promise<any[]>
-export type selectWithQueryAndPagination = (
-  resourceName: string,
-  pagination: Pagination,
-  query?: Query,
-) => Promise<any[]>
+export type selectWithQueryAndPagination = (pagination: Pagination, query?: Query) => Promise<any[]>
 
 export type selectManyFn = selectAll | selectWithQuery | selectWithQueryAndPagination
 
@@ -143,7 +137,7 @@ export default (options: RestOptions): Router => {
     }
 
     try {
-      res.send(await options.dataAdapter.selectMany(options.resource, req.dbPagination, req.dbQuery))
+      res.send(await options.dataAdapter.selectMany(req.dbPagination, req.dbQuery))
     } catch ({ message }) {
       next(new Error(`could not get the resources, ${message}`))
     }

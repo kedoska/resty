@@ -43,6 +43,54 @@ The following functions can be defined into the data-adapter and passed as argum
  - deleteOne _(optional promise)_: creates the `delete ID` endpoint.
  - deleteAll _(optional promise)_: creates the `delete` endpoint.
 
+### selectMany
+
+```typescript
+  const users = resty({
+    version: 'v1',
+    resource: 'users',
+    dataAdapter: {
+      selectMany: () => new Promise((resolve) => resolve([]))
+    },
+  })
+
+  const app = express()
+  app.use(users)
+```
+
+The above server exposes the `GET` endpoint for the _Users_ resource, mounting the path `/v1/users`.<br/>
+The data returned by the promise `selectMany`, an empty array in the example, is sent back as JSON response body.
+
+### selectMany with default pagination
+
+```typescript
+  const users = resty({
+    version: 'v1',
+    resource: 'users',
+    dataAdapter: {
+      selectMany: (pagination) => new Promise((resolve) => {
+        const {page, limit} = pagination
+        // limit your data...
+        resolve([])
+      }
+    },
+  })
+
+  const app = express()
+  app.use(users)
+```
+
+`selectMany` receives the pagination data as the first parameter. `Limit` and `Page` are parsed from the Querystring.<br/>
+Consider the below examples, the default pagination is very straightforward, the data coming from the query string is parsed and passed directly to the selectMany Function.
+
+ * `curl https://localhost:8080?` becomes `{ limit: 0 page: 0 }`
+ * `curl https://localhost:8080?limit=10&page=2` becomes `{ limit: 10 page: 2 }`
+ * ...
+
+### selectMany with custom pagination
+
+
+
 ### Examples
 
  - How to build a CRUD REST API using Express, resty and Sqlite3 [exmaples/sqllite3](https://github.com/kedoska/resty/tree/master/examples/sqlite3)?
