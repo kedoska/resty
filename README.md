@@ -82,7 +82,6 @@ The data returned by the promise `selectMany`, an empty array in the example, is
 
 `selectMany` receives the pagination data as the first parameter. `Limit` and `Page` are parsed from the Querystring.
 
-
 ### Examples
 
  - How to build a CRUD REST API using Express, resty and Sqlite3 [exmaples/sqllite3](https://github.com/kedoska/resty/tree/master/examples/sqlite3)?
