@@ -13,7 +13,7 @@ beforeAll(() => {
 
 test('GET ALL', function (done) {
   const dataAdapter: DataAdapter = {
-    selectMany: (resourceName: string): Promise<User[]> =>
+    selectMany: (): Promise<User[]> =>
       new Promise((resolve) => {
         resolve(database)
       }),
@@ -21,7 +21,7 @@ test('GET ALL', function (done) {
 
   const users = resty({
     version: 'v1',
-    resourceName: 'users',
+    resource: 'users',
     dataAdapter,
   })
 
