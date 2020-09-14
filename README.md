@@ -61,7 +61,7 @@ The following functions can be defined into the data-adapter and passed as argum
 The above server exposes the `GET` endpoint for the _Users_ resource, mounting the path `/v1/users`.<br/>
 The data returned by the promise `selectMany`, an empty array in the example, is sent back as JSON response body.
 
-### selectMany with pagination
+### selectMany with default pagination
 
 ```typescript
   const users = resty({
@@ -80,7 +80,16 @@ The data returned by the promise `selectMany`, an empty array in the example, is
   app.use(users)
 ```
 
-`selectMany` receives the pagination data as the first parameter. `Limit` and `Page` are parsed from the Querystring.
+`selectMany` receives the pagination data as the first parameter. `Limit` and `Page` are parsed from the Querystring.<br/>
+Consider the below examples, the default pagination is very straightforward, the data coming from the query string is parsed and passed directly to the selectMany Function.
+
+ * `curl https://localhost:8080?` becomes `{ limit: 0 page: 0 }`
+ * `curl https://localhost:8080?limit=10&page=2` becomes `{ limit: 10 page: 2 }`
+ * ...
+
+### selectMany with custom pagination
+
+
 
 ### Examples
 
