@@ -1,5 +1,4 @@
-resty
-=====
+![resty](https://user-images.githubusercontent.com/11739105/93143699-a8c8f380-f6a5-11ea-9cb2-bf1a7333f788.png)
 
 ![npm](https://img.shields.io/npm/v/@kedoska/resty?style=flat-square) ![NPM](https://img.shields.io/npm/l/@kedoska/resty?style=flat-square) <br/>
 
