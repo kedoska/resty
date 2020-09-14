@@ -1,9 +1,9 @@
-var sqlite3 = require("sqlite3").verbose();
+var sqlite3 = require('sqlite3').verbose()
 
 module.exports = (databasePath) => {
   let db = new sqlite3.Database(databasePath, (err) => {
     if (err) {
-      throw err;
+      throw err
     }
     db.run(
       `CREATE TABLE users (
@@ -17,8 +17,8 @@ module.exports = (databasePath) => {
         if (err) {
           console.log(`skip database schema creation`)
         }
-      }
-    );
-  });
-  return db;
-};
+      },
+    )
+  })
+  return db
+}

@@ -127,11 +127,9 @@ export default (options: RestOptions): Router => {
         const queryExtractorSource = options.query.source || RequestDataSource.Query
         req.dbQuery = options.query.extractor(req[queryExtractorSource])
       }
-
-      if (req.method === 'POST' && options.parser) {
+      if ((req.method === 'POST' || req.method === 'PUT') && options.parser) {
         req.parsedResource = options.parser.extractor(req[options.parser.source])
       }
-
       next()
     } catch (error) {
       next(error)

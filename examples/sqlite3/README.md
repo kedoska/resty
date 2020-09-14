@@ -49,7 +49,10 @@ curl 'http://localhost:8080/v1/users'
 
 * **U**pdate an user
 ```bash
-# TODO
+curl -d \
+'{"name":"Demo", "email":"demo@test.local", "password":"biggest-secret"}' \
+-H "Content-Type: application/json" \
+-X PUT http://localhost:8080/v1/users/1
 ```
 
 * **D**elete an user
