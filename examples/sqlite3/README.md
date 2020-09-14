@@ -54,5 +54,5 @@ curl 'http://localhost:8080/v1/users'
 
 * **D**elete an user
 ```bash
-# TODO
+curl -X DELETE http://localhost:8080/v1/users/1
 ```
