@@ -54,14 +54,14 @@ export type QueryExtractor = (payload: any) => Query
 
 export type PaginationExtractor = (payload: any) => Pagination
 
-export type CreateOneFn = (resourceName: string, resource: any) => Promise<any>
-export type SelectOneFn = (resourceName: string, id: string) => Promise<any>
-export type UpdateOneFn = (resourceName: string, id: string, resource: any) => Promise<any>
-export type DeleteOneFn = (resourceName: string, id: string) => Promise<void>
-export type deleteAllFn = (resourceName: string) => Promise<any[]>
+export type CreateOneFn = (resource: any) => Promise<any>
+export type SelectOneFn = (id: string) => Promise<any>
+export type UpdateOneFn = (id: string, resource: any) => Promise<any>
+export type DeleteOneFn = (id: string) => Promise<void>
+export type deleteAllFn = () => Promise<any[]>
 
-export type selectAll = (resourceName: string) => Promise<any[]>
-export type selectWithQuery = (resourceName: string, query?: Query) => Promise<any[]>
+export type selectAll = () => Promise<any[]>
+export type selectWithQuery = (query?: Query) => Promise<any[]>
 export type selectWithQueryAndPagination = (
   resourceName: string,
   pagination: Pagination,
@@ -89,7 +89,7 @@ export enum RequestDataSource {
 export interface RestOptions {
   version: string
   parent?: string
-  resourceName: string
+  resource: string
   parser?: {
     extractor: DataExtractor
     source: RequestDataSource
@@ -111,7 +111,7 @@ export default (options: RestOptions): Router => {
   router.use(urlencoded({ extended: false }))
 
   const parent = !options.parent ? '/' : options.parent
-  const path = normalize(`${parent}/${options.version}/${options.resourceName}`)
+  const path = normalize(`${parent}/${options.version}/${options.resource}`)
 
   router.use((req, res, next) => {
     try {
@@ -145,7 +145,7 @@ export default (options: RestOptions): Router => {
     }
 
     try {
-      res.send(await options.dataAdapter.selectMany(options.resourceName, req.dbPagination, req.dbQuery))
+      res.send(await options.dataAdapter.selectMany(options.resource, req.dbPagination, req.dbQuery))
     } catch ({ message }) {
       next(new Error(`could not get the resources, ${message}`))
     }
@@ -158,7 +158,7 @@ export default (options: RestOptions): Router => {
     }
 
     try {
-      res.send(await options.dataAdapter.deleteAll(options.resourceName))
+      res.send(await options.dataAdapter.deleteAll())
     } catch ({ message }) {
       next(new Error(`could not get the resources, ${message}`))
     }
@@ -170,7 +170,7 @@ export default (options: RestOptions): Router => {
       return
     }
     try {
-      res.send(res.send(await options.dataAdapter.selectOne(options.resourceName, req.params.id)))
+      res.send(res.send(await options.dataAdapter.selectOne(req.params.id)))
     } catch ({ message }) {
       next(new Error(`could not get the resources, ${message}`))
     }
@@ -183,7 +183,7 @@ export default (options: RestOptions): Router => {
     }
 
     try {
-      res.send(await options.dataAdapter.createOne(options.resourceName, req.parsedResource || req.body))
+      res.send(await options.dataAdapter.createOne(req.parsedResource || req.body))
     } catch ({ message }) {
       next(new Error(`could not create the new resource, ${message}`))
     }
@@ -195,7 +195,7 @@ export default (options: RestOptions): Router => {
       return
     }
     try {
-      await options.dataAdapter.deleteOne(options.resourceName, req.params.id)
+      await options.dataAdapter.deleteOne(req.params.id)
       res.send()
     } catch ({ message }) {
       next(new Error(`could not delete the resource "${req.params.id}", ${message}`))
@@ -208,7 +208,7 @@ export default (options: RestOptions): Router => {
       return
     }
     try {
-      res.send(await options.dataAdapter.updateOne(options.resourceName, req.params.id, req.parsedResource || req.body))
+      res.send(await options.dataAdapter.updateOne(req.params.id, req.parsedResource || req.body))
     } catch ({ message }) {
       next(new Error(`could not update the resource "${req.params.id}", ${message}`))
     }
