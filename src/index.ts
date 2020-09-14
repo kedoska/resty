@@ -57,7 +57,7 @@ export type PaginationExtractor = (payload: any) => Pagination
 export type CreateOneFn = (resourceName: string, resource: any) => Promise<any>
 export type SelectOneFn = (resourceName: string, id: string) => Promise<any>
 export type UpdateOneFn = (resourceName: string, id: string, resource: any) => Promise<any>
-export type DeleteOneFn = (resourceName: string, id: string) => Promise<any>
+export type DeleteOneFn = (resourceName: string, id: string) => Promise<void>
 export type deleteAllFn = (resourceName: string) => Promise<any[]>
 
 export type selectAll = (resourceName: string) => Promise<any[]>
@@ -132,7 +132,6 @@ export default (options: RestOptions): Router => {
         req.parsedResource = options.parser.extractor(req[options.parser.source])
       }
 
-      req.dbResourceId = req.params.id || ''
       next()
     } catch (error) {
       next(error)
@@ -171,7 +170,7 @@ export default (options: RestOptions): Router => {
       return
     }
     try {
-      res.send(res.send(await options.dataAdapter.selectOne(options.resourceName, req.dbResourceId)))
+      res.send(res.send(await options.dataAdapter.selectOne(options.resourceName, req.params.id)))
     } catch ({ message }) {
       next(new Error(`could not get the resources, ${message}`))
     }
@@ -196,9 +195,10 @@ export default (options: RestOptions): Router => {
       return
     }
     try {
-      res.send(res.send(await options.dataAdapter.deleteOne(options.resourceName, req.dbResourceId)))
+      await options.dataAdapter.deleteOne(options.resourceName, req.params.id)
+      res.send()
     } catch ({ message }) {
-      next(new Error(`could not delete the resource "${req.dbResourceId}", ${message}`))
+      next(new Error(`could not delete the resource "${req.params.id}", ${message}`))
     }
   })
 
@@ -208,11 +208,9 @@ export default (options: RestOptions): Router => {
       return
     }
     try {
-      res.send(
-        await options.dataAdapter.updateOne(options.resourceName, req.dbResourceId, req.parsedResource || req.body),
-      )
+      res.send(await options.dataAdapter.updateOne(options.resourceName, req.params.id, req.parsedResource || req.body))
     } catch ({ message }) {
-      next(new Error(`could not update the resource "${req.dbResourceId}", ${message}`))
+      next(new Error(`could not update the resource "${req.params.id}", ${message}`))
     }
   })
 
