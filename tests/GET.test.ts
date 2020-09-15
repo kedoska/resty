@@ -1,6 +1,6 @@
 import * as express from 'express'
 import * as request from 'supertest'
-import resty, { DataAdapter, Pagination, Query, RequestDataSource } from '../src'
+import resty, { DataAdapter } from '../src'
 
 interface User {
   name: string
