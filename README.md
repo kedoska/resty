@@ -133,7 +133,7 @@ The function handles eventual rejections coming from the data-adapter.<br/>
 ```typescript
 // in your server
 import express from 'express'
-import { errorHandler } from '@kedoska/resty'
+import resty, { errorHandler } from '@kedoska/resty'
 
 const app = express()
 app.use(
