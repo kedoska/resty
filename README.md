@@ -14,19 +14,54 @@ npm install @kedoska/resty
  - Define CRUD operations on the data-adapter.
  - Built-in extractors for _pagination_ and _query_.
 
-#### Specify Version and Resource
-The first operation is to define the REST resource, passing the **version** and the **resource name**.<br/>
-Both values are used to create the API endpoint, having the version as the root and the resource name as the second path.
+#### Define your resources
+> Example: './resources/users'
 
 ```typescript
-  const users = resty({
-    version: 'v1',
-    resource: 'users',
-    dataAdapter: {},
+import resty, { Pagination, Query } from '@kedoska/resty'
+
+export interface User {
+  email: string
+  username: string
+}
+
+const selectMany = (pagination: Pagination, query?: Query): Promise<User[]> =>
+  new Promise((resolve, reject) => {
+    try {
+      resolve([])
+    } catch ({message}) {
+      reject(Error(`could not "select" the resources, ${message}`))
+    }
   })
 
-  const app = express()
-  app.use(users)
+export default () => {
+  return resty({
+    version: 'v1',
+    resource: 'users',
+    dataAdapter: {
+      // createOne,
+      selectMany, 
+      // selectOne, 
+      // updateOne, 
+      // deleteOne, 
+      // deleteAll, 
+    },
+  })
+}
+```
+
+#### Consume the resource
+> Example: '.server.ts'
+
+```typescript
+// in your server
+import express from 'express'
+import users from './resources/users'
+
+const app = express()
+app.use(users())
+app.listen(8080)
+
 ```
 
 #### The Data Adapter
@@ -87,10 +122,42 @@ Consider the below examples, the default pagination is very straightforward, the
  * `curl https://localhost:8080?limit=10&page=2` becomes `{ limit: 10 page: 2 }`
  * ...
 
-### selectMany with custom pagination
-
-
-
 ### Examples
+ - **(TS)** Copy/Paste Data Adapter Skeleton [gits](https://gist.github.com/kedoska/eab2179c0532df77892a59a158da77ef)
+ - **(JS)** How to build a CRUD REST API using Express, resty and Sqlite3 [examples/sqllite3](https://github.com/kedoska/resty/tree/master/examples/sqlite3)
 
- - How to build a CRUD REST API using Express, resty and Sqlite3 [exmaples/sqllite3](https://github.com/kedoska/resty/tree/master/examples/sqlite3)?
+## Error Handling
+
+The below example implements the `errorHandler` middleware from `'@kedoska/resty'` to catch the error sent by the `createOne` function.<br/>
+The function handles eventual rejections coming from the data-adapter.<br/>
+
+```typescript
+// in your server
+import express from 'express'
+import { errorHandler } from '@kedoska/resty'
+
+const app = express()
+app.use(
+  resty({
+    version: 'v1',
+    resource: 'users',
+    dataAdapter: {
+      createOne: (resource: any) => new Promise((resolve, reject) => {
+        reject(Error('Not Yet Implemented'))
+      }),
+    },
+  })
+)
+
+app.use(errorHandler)
+app.listen(8080)
+```
+
+The `post` endpoint created by `createOne` is `/v1/users/`.<br/>
+It will fail, returning status `200 OK`, having the following body:<br/>
+
+```json
+{
+  "message": "createOne not yet implemented"
+}
+```

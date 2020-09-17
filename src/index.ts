@@ -175,6 +175,16 @@ export const deleteAllHandler = (options: RestOptions) => async (req: Request, r
   }
 }
 
+export const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
+  if (err) {
+    res.status(200).send({
+      message: err.message,
+    })
+    return
+  }
+  next()
+}
+
 export default (options: RestOptions): Router => {
   const router = Router()
   router.use(json())
@@ -201,8 +211,8 @@ export default (options: RestOptions): Router => {
         req.parsedResource = options.parser.extractor(req[options.parser.source])
       }
       next()
-    } catch (error) {
-      next(error)
+    } catch (err) {
+      next(err)
     }
   })
 
@@ -230,15 +240,7 @@ export default (options: RestOptions): Router => {
     router.delete(`${path}/:id`, deleteOneHandler(options))
   }
 
-  router.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-    if (err) {
-      res.status(500).send({
-        message: err.message,
-      })
-      return
-    }
-    next()
-  })
+  router.use(errorHandler)
 
   return router
 }
