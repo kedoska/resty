@@ -28,6 +28,7 @@
     "express": "^4.17.1",
     "jest": "^26.0.1",
     "jest-fetch-mock": "^3.0.3",
+    "method-override": "^3.0.0",
     "prettier": "^2.0.5",
     "supertest": "^4.0.2",
     "ts-jest": "^26.0.0",
@@ -37,6 +38,7 @@
     "whatwg-fetch": "^3.0.0"
   },
   "peerDependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "method-override": "^3.0.0"
   }
 }

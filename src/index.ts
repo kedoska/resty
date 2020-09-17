@@ -99,6 +99,92 @@ export interface RestOptions {
   dataAdapter: DataAdapter
 }
 
+export const createOneHandler = (options: RestOptions) => async (req: Request, res: Response, next: NextFunction) => {
+  if (!options.dataAdapter.createOne) {
+    next(new Error(`createOne not yet implemented`))
+    return
+  }
+
+  try {
+    res.send(await options.dataAdapter.createOne(req.parsedResource || req.body))
+  } catch ({ message }) {
+    next(new Error(`could not create the new resource, ${message}`))
+  }
+}
+
+export const selectManyHandler = (options: RestOptions) => async (req: Request, res: Response, next: NextFunction) => {
+  if (!options.dataAdapter.selectMany) {
+    next(new Error(`selectMany not yet implemented`))
+    return
+  }
+
+  try {
+    res.send(await options.dataAdapter.selectMany(req.dbPagination, req.dbQuery))
+  } catch ({ message }) {
+    next(new Error(`could not get the resources, ${message}`))
+  }
+}
+
+export const selectOneHandler = (options: RestOptions) => async (req: Request, res: Response, next: NextFunction) => {
+  if (!options.dataAdapter.selectOne) {
+    next(new Error(`selectOne not yet implemented`))
+    return
+  }
+  try {
+    res.send(res.send(await options.dataAdapter.selectOne(req.params.id)))
+  } catch ({ message }) {
+    next(new Error(`could not get the resources, ${message}`))
+  }
+}
+
+export const updateOneHandler = (options: RestOptions) => async (req: Request, res: Response, next: NextFunction) => {
+  if (!options.dataAdapter.updateOne) {
+    next(new Error(`updateOne not yet implemented`))
+    return
+  }
+  try {
+    res.send(await options.dataAdapter.updateOne(req.params.id, req.parsedResource || req.body))
+  } catch ({ message }) {
+    next(new Error(`could not update the resource "${req.params.id}", ${message}`))
+  }
+}
+
+export const deleteOneHandler = (options: RestOptions) => async (req: Request, res: Response, next: NextFunction) => {
+  if (!options.dataAdapter.deleteOne) {
+    next(new Error(`deleteOne not yet implemented`))
+    return
+  }
+  try {
+    await options.dataAdapter.deleteOne(req.params.id)
+    res.send()
+  } catch ({ message }) {
+    next(new Error(`could not delete the resource "${req.params.id}", ${message}`))
+  }
+}
+
+export const deleteAllHandler = (options: RestOptions) => async (req: Request, res: Response, next: NextFunction) => {
+  if (!options.dataAdapter.deleteAll) {
+    next(new Error(`deleteAll not yet implemented`))
+    return
+  }
+
+  try {
+    res.send(await options.dataAdapter.deleteAll())
+  } catch ({ message }) {
+    next(new Error(`could not get the resources, ${message}`))
+  }
+}
+
+export const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
+  if (err) {
+    res.status(200).send({
+      message: err.message,
+    })
+    return
+  }
+  next()
+}
+
 export default (options: RestOptions): Router => {
   const router = Router()
   router.use(json())
@@ -125,96 +211,36 @@ export default (options: RestOptions): Router => {
         req.parsedResource = options.parser.extractor(req[options.parser.source])
       }
       next()
-    } catch (error) {
-      next(error)
+    } catch (err) {
+      next(err)
     }
   })
 
-  router.get(`${path}`, async (req, res, next) => {
-    if (!options.dataAdapter.selectMany) {
-      next(new Error(`selectMany not yet implemented`))
-      return
-    }
+  if (options.dataAdapter.createOne) {
+    router.post(`${path}`, createOneHandler(options))
+  }
 
-    try {
-      res.send(await options.dataAdapter.selectMany(req.dbPagination, req.dbQuery))
-    } catch ({ message }) {
-      next(new Error(`could not get the resources, ${message}`))
-    }
-  })
+  if (options.dataAdapter.selectMany) {
+    router.get(`${path}`, selectManyHandler(options))
+  }
 
-  router.delete(`${path}`, async (req, res, next) => {
-    if (!options.dataAdapter.deleteAll) {
-      next(new Error(`deleteAll not yet implemented`))
-      return
-    }
+  if (options.dataAdapter.selectOne) {
+    router.get(`${path}/:id`, selectOneHandler(options))
+  }
 
-    try {
-      res.send(await options.dataAdapter.deleteAll())
-    } catch ({ message }) {
-      next(new Error(`could not get the resources, ${message}`))
-    }
-  })
+  if (options.dataAdapter.updateOne) {
+    router.put(`${path}/:id`, updateOneHandler(options))
+  }
 
-  router.get(`${path}/:id`, async (req, res, next) => {
-    if (!options.dataAdapter.selectOne) {
-      next(new Error(`selectOne not yet implemented`))
-      return
-    }
-    try {
-      res.send(res.send(await options.dataAdapter.selectOne(req.params.id)))
-    } catch ({ message }) {
-      next(new Error(`could not get the resources, ${message}`))
-    }
-  })
+  if (options.dataAdapter.deleteAll) {
+    router.delete(`${path}`, deleteAllHandler(options))
+  }
 
-  router.post(`${path}`, async (req, res, next) => {
-    if (!options.dataAdapter.createOne) {
-      next(new Error(`createOne not yet implemented`))
-      return
-    }
+  if (options.dataAdapter.deleteOne) {
+    router.delete(`${path}/:id`, deleteOneHandler(options))
+  }
 
-    try {
-      res.send(await options.dataAdapter.createOne(req.parsedResource || req.body))
-    } catch ({ message }) {
-      next(new Error(`could not create the new resource, ${message}`))
-    }
-  })
-
-  router.delete(`${path}/:id`, async (req, res, next) => {
-    if (!options.dataAdapter.deleteOne) {
-      next(new Error(`deleteOne not yet implemented`))
-      return
-    }
-    try {
-      await options.dataAdapter.deleteOne(req.params.id)
-      res.send()
-    } catch ({ message }) {
-      next(new Error(`could not delete the resource "${req.params.id}", ${message}`))
-    }
-  })
-
-  router.put(`${path}/:id`, async (req, res, next) => {
-    if (!options.dataAdapter.updateOne) {
-      next(new Error(`updateOne not yet implemented`))
-      return
-    }
-    try {
-      res.send(await options.dataAdapter.updateOne(req.params.id, req.parsedResource || req.body))
-    } catch ({ message }) {
-      next(new Error(`could not update the resource "${req.params.id}", ${message}`))
-    }
-  })
-
-  router.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-    if (err) {
-      res.status(500).send({
-        message: err.message,
-      })
-      return
-    }
-    next()
-  })
+  router.use(errorHandler)
 
   return router
 }
